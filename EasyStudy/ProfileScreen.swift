@@ -1,72 +1,45 @@
-import SwiftUI // Importation du framework SwiftUI
+import SwiftUI
 
 struct ProfileScreen: View {
-    var onBack: () -> Void // Closure pour revenir à l'écran précédent
+    // Closure pour gérer la déconnexion (navigation vers LoginScreen)
+    var onLogout: () -> Void
 
     var body: some View {
-        NavigationView { // Ajout d'un conteneur NavigationView pour gérer la navigation
-            VStack(alignment: .leading, spacing: 20) { // Organise les éléments verticalement
-                // Titre principal de l'écran
+        NavigationView {
+            VStack(alignment: .leading, spacing: 20) { // Conteneur vertical
                 Text("Settings")
-                    .font(.largeTitle) // Police large
-                    .fontWeight(.bold) // Texte en gras
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .padding(.bottom, 20)
 
-                // Liste des options du profil
+                // Section pour les paramètres principaux
                 List {
-                    Section {
-                        // Options principales
-                        NavigationLink(destination: Text("Edit Profile")) { // Lien vers l'écran de modification du profil
-                            Label("Edit profile", systemImage: "person.fill") // Texte avec une icône
+                    Section(header: Text("Account")) {
+                        NavigationLink(destination: Text("Edit Profile")) { // Lien pour modifier le profil
+                            Label("Edit Profile", systemImage: "person.fill")
                         }
-                        NavigationLink(destination: Text("Security Settings")) {
-                            Label("Security", systemImage: "lock.fill")
-                        }
-                        NavigationLink(destination: Text("Notifications Settings")) {
-                            Label("Notifications", systemImage: "bell.fill")
-                        }
-                        NavigationLink(destination: Text("Privacy Settings")) {
+                        NavigationLink(destination: Text("Privacy Settings")) { // Lien pour la confidentialité
                             Label("Privacy", systemImage: "shield.fill")
                         }
-                    }
-
-                    Section {
-                        // Options secondaires
-                        NavigationLink(destination: Text("Report a Problem")) {
-                            Label("Report a problem", systemImage: "exclamationmark.triangle.fill")
-                        }
-                        NavigationLink(destination: Text("Add Account")) {
-                            Label("Add account", systemImage: "person.badge.plus.fill")
+                        NavigationLink(destination: Text("Security Settings")) { // Lien pour la sécurité
+                            Label("Security", systemImage: "lock.fill")
                         }
                     }
 
-                    // Bouton de déconnexion
+                    // Section pour la déconnexion
                     Section {
                         Button(action: {
-                            // Action pour se déconnecter
+                            // Appelle la closure pour déconnexion
+                            onLogout()
                         }) {
-                            Label("Log out", systemImage: "arrow.backward.square.fill")
-                                .foregroundColor(.red) // Met le bouton en rouge
+                            Label("Log Out", systemImage: "arrow.backward.square")
+                                .foregroundColor(.red) // Bouton en rouge
                         }
                     }
                 }
-
-                Spacer() // Ajoute de l'espace flexible pour pousser les éléments vers le haut
-
-                // Bouton "Retour"
-                Button(action: {
-                    onBack() // Appelle la closure pour revenir à l'écran précédent
-                }) {
-                    Text("Back")
-                        .font(.headline)
-                        .padding()
-                        .frame(maxWidth: .infinity) // Étend le bouton sur toute la largeur disponible
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
-                .padding() // Ajoute de l'espace autour du bouton
+                .listStyle(InsetGroupedListStyle()) // Style pour la liste
+                .navigationTitle("Settings") // Titre dans la barre de navigation
             }
-            .padding() // Ajoute de l'espace autour des éléments principaux
         }
     }
 }
@@ -74,6 +47,6 @@ struct ProfileScreen: View {
 // Aperçu de la vue ProfileScreen
 struct ProfileScreen_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileScreen(onBack: {}) // Aperçu avec une closure fictive
+        ProfileScreen(onLogout: {})
     }
 }

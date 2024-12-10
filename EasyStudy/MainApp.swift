@@ -1,35 +1,52 @@
-import SwiftUI // Importation du framework SwiftUI pour créer l'interface utilisateur
+import SwiftUI // Importation du framework SwiftUI
 
 struct MainApp: View {
-    // Variable pour suivre l'écran actuel (exemple : SplashScreen, LoginScreen, HomeScreen)
-    @State private var currentPage: String = "SplashScreen"
+    @State private var selectedTab: Int = 0 // Gère l'onglet sélectionné (index de 0 à 3)
+    @State private var isLoggedIn: Bool = true // Gère l'état de connexion
 
-    // Corps de la vue principale
     var body: some View {
-        VStack { // Conteneur vertical pour organiser les écrans
-            // Affichage conditionnel basé sur `currentPage`
-            if currentPage == "SplashScreen" { // Affiche l'écran Splash
-                SplashScreen(onNext: {
-                    currentPage = "LoginScreen"
+        if isLoggedIn { // Affiche la TabView si l'utilisateur est connecté
+            TabView(selection: $selectedTab) { // Création de la barre d'onglets
+                // Onglet 1 : Accueil
+                HomeScreen()
+                    .tabItem {
+                        Image(systemName: selectedTab == 0 ? "house.fill" : "house") // Icône pour Accueil
+                        Text("Home")
+                    }
+                    .tag(0) // Index de cet onglet
+
+                // Onglet 2 : Ajouter un élément
+                HistoryScreen()
+                    .tabItem {
+                        Image(systemName: selectedTab == 1 ? "square.and.pencil.fill" : "square.and.pencil") // Icône pour Ajouter
+                        Text("Add")
+                    }
+                    .tag(1) // Index de cet onglet
+
+                // Onglet 3 : Notifications
+                ChatScreen()
+                    .tabItem {
+                        Image(systemName: selectedTab == 2 ? "bell.fill" : "bell") // Icône pour Notifications
+                        Text("Notifications")
+                    }
+                    .tag(2) // Index de cet onglet
+
+                // Onglet 4 : Paramètres
+                ProfileScreen(onLogout: {
+                    isLoggedIn = false // Déconnecte l'utilisateur et revient à l'écran Login
                 })
-            } else if currentPage == "LoginScreen" { // Affiche l'écran Login
-                LoginScreen(onNext: {
-                    currentPage = "HomeScreen"
-                })
-            } else if currentPage == "HomeScreen" { // Affiche l'écran Home
-                HomeScreen(
-                    onChat: { currentPage = "ChatScreen" }, // Passe à l'écran Chat
-                    onProfile: { currentPage = "ProfileScreen" } // Passe à l'écran Profil
-                )
-            } else if currentPage == "ChatScreen" { // Affiche l'écran Chat
-                ChatScreen(onBack: {
-                    currentPage = "HomeScreen" // Retourne à l'écran Home
-                })
-            } else if currentPage == "ProfileScreen" { // Affiche l'écran Profil
-                ProfileScreen(onBack: {
-                    currentPage = "HomeScreen" // Retourne à l'écran Home
-                })
+                    .tabItem {
+                        Image(systemName: selectedTab == 3 ? "gearshape.fill" : "gearshape") // Icône pour Paramètres
+                        Text("Settings")
+                    }
+                    .tag(3) // Index de cet onglet
             }
+            .accentColor(.blue) // Couleur principale de la barre (modifiable)
+        } else {
+            // Affiche l'écran de connexion si l'utilisateur n'est pas connecté
+            LoginScreen(onNext: {
+                isLoggedIn = true // Réactive la TabView après connexion
+            })
         }
     }
 }
@@ -37,6 +54,6 @@ struct MainApp: View {
 // Aperçu pour Xcode
 struct MainApp_Previews: PreviewProvider {
     static var previews: some View {
-        MainApp() // Permet de prévisualiser toutes les pages
+        MainApp() // Aperçu de l'application avec barre de navigation
     }
 }
