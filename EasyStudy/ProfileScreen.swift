@@ -1,50 +1,54 @@
 import SwiftUI
 
 struct ProfileScreen: View {
-    // Closure pour gérer la déconnexion (navigation vers LoginScreen)
-    var onLogout: () -> Void
+    var onLogout: () -> Void // Closure pour déconnecter l'utilisateur
 
     var body: some View {
-        NavigationView {
-            VStack(alignment: .leading, spacing: 20) { // Conteneur vertical
-                Text("Settings")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding(.bottom, 20)
-
-                // Section pour les paramètres principaux
+        NavigationView { // Ajout d'un NavigationView pour la navigation
+            VStack(alignment: .leading, spacing: 20) {
+                // Liste des options
                 List {
-                    Section(header: Text("Account")) {
-                        NavigationLink(destination: Text("Edit Profile")) { // Lien pour modifier le profil
+                    Section(header: Text("Account Settings")) { // Section pour les paramètres du compte
+                        NavigationLink(destination: Text("Edit Profile")) {
                             Label("Edit Profile", systemImage: "person.fill")
                         }
-                        NavigationLink(destination: Text("Privacy Settings")) { // Lien pour la confidentialité
-                            Label("Privacy", systemImage: "shield.fill")
-                        }
-                        NavigationLink(destination: Text("Security Settings")) { // Lien pour la sécurité
+                        NavigationLink(destination: Text("Change Password")) {
                             Label("Security", systemImage: "lock.fill")
                         }
                     }
 
-                    // Section pour la déconnexion
-                    Section {
+                    Section(header: Text("Notifications")) { // Section pour les notifications
+                        NavigationLink(destination: Text("Manage Notifications")) {
+                            Label("Notifications", systemImage: "bell.fill")
+                        }
+                    }
+
+                    Section(header: Text("Support")) { // Section pour l'assistance
+                        NavigationLink(destination: Text("Help Center")) {
+                            Label("Help Center", systemImage: "questionmark.circle.fill")
+                        }
+                        NavigationLink(destination: Text("Report a Problem")) {
+                            Label("Report a Problem", systemImage: "exclamationmark.triangle.fill")
+                        }
+                    }
+
+                    Section { // Section pour la déconnexion
                         Button(action: {
-                            // Appelle la closure pour déconnexion
-                            onLogout()
+                            onLogout() // Appelle la fonction de déconnexion
                         }) {
-                            Label("Log Out", systemImage: "arrow.backward.square")
-                                .foregroundColor(.red) // Bouton en rouge
+                            Label("Log Out", systemImage: "arrow.backward.square.fill")
+                                .foregroundColor(.red) // Texte en rouge
                         }
                     }
                 }
-                .listStyle(InsetGroupedListStyle()) // Style pour la liste
-                .navigationTitle("Settings") // Titre dans la barre de navigation
+                .listStyle(InsetGroupedListStyle()) // Style de liste moderne
             }
+            .navigationTitle("Settings") // Titre unique pour la vue
         }
     }
 }
 
-// Aperçu de la vue ProfileScreen
+// Aperçu
 struct ProfileScreen_Previews: PreviewProvider {
     static var previews: some View {
         ProfileScreen(onLogout: {})

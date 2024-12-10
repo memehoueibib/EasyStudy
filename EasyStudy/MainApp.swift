@@ -1,12 +1,17 @@
-import SwiftUI // Importation du framework SwiftUI
+import SwiftUI
 
 struct MainApp: View {
-    @State private var selectedTab: Int = 0 // Gère l'onglet sélectionné (index de 0 à 3)
+    @State private var selectedTab: Int = 0 // Gère l'onglet sélectionné (index de 0 à 4)
     @State private var isLoggedIn: Bool = false // Gère l'état de connexion
     @State private var isCreatingAccount: Bool = false // Gère l'état de création de compte
+    @State private var showSplash: Bool = true // Affiche la SplashScreen au début
 
     var body: some View {
-        if isLoggedIn { // Affiche la TabView si l'utilisateur est connecté
+        if showSplash { // Affiche la SplashScreen en premier
+            SplashScreen(onNext: {
+                showSplash = false // Masque la SplashScreen pour afficher LoginScreen
+            })
+        } else if isLoggedIn { // Affiche la TabView si l'utilisateur est connecté
             TabView(selection: $selectedTab) { // Création de la barre d'onglets
                 // Onglet 1 : Accueil
                 HomeScreen()
@@ -16,31 +21,40 @@ struct MainApp: View {
                     }
                     .tag(0) // Index de cet onglet
 
-                // Onglet 2 : Ajouter un élément
+                // Onglet 2 : Ajouter une catégorie
                 HistoryScreen()
                     .tabItem {
-                        Image(systemName: selectedTab == 1 ? "square.and.pencil.fill" : "square.and.pencil") // Icône pour Ajouter
+                        Image(systemName: selectedTab == 1 ? "plus.square.fill" : "plus.square") // Icône pour Ajouter
                         Text("Add")
                     }
                     .tag(1) // Index de cet onglet
 
-                // Onglet 3 : Notifications
+                // Onglet 3 : Chat
                 ChatScreen()
                     .tabItem {
-                        Image(systemName: selectedTab == 2 ? "bell.fill" : "bell") // Icône pour Notifications
-                        Text("Notifications")
+                        Image(systemName: selectedTab == 2 ? "bubble.left.fill" : "bubble.left") // Icône pour Chat
+                        Text("Chat")
                     }
                     .tag(2) // Index de cet onglet
 
-                // Onglet 4 : Paramètres
-                ProfileScreen(onLogout: {
-                    isLoggedIn = false // Déconnecte l'utilisateur et revient à l'écran Login
-                })
+                // Onglet 4 : Notifications
+                NotificationScreen()
                     .tabItem {
-                        Image(systemName: selectedTab == 3 ? "gearshape.fill" : "gearshape") // Icône pour Paramètres
-                        Text("Settings")
+                        Image(systemName: selectedTab == 3 ? "bell.fill" : "bell") // Icône pour Notifications
+                        Text("Notifications")
                     }
                     .tag(3) // Index de cet onglet
+
+                // Onglet 5 : Paramètres
+                ProfileScreen(onLogout: {
+                    isLoggedIn = false // Déconnecte l'utilisateur et revient à l'écran Login
+                    showSplash = true // Affiche la SplashScreen après déconnexion
+                })
+                    .tabItem {
+                        Image(systemName: selectedTab == 4 ? "gearshape.fill" : "gearshape") // Icône pour Paramètres
+                        Text("Settings")
+                    }
+                    .tag(4) // Index de cet onglet
             }
             .accentColor(.blue) // Couleur principale de la barre (modifiable)
         } else {
