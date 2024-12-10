@@ -2,7 +2,8 @@ import SwiftUI // Importation du framework SwiftUI
 
 struct MainApp: View {
     @State private var selectedTab: Int = 0 // Gère l'onglet sélectionné (index de 0 à 3)
-    @State private var isLoggedIn: Bool = true // Gère l'état de connexion
+    @State private var isLoggedIn: Bool = false // Gère l'état de connexion
+    @State private var isCreatingAccount: Bool = false // Gère l'état de création de compte
 
     var body: some View {
         if isLoggedIn { // Affiche la TabView si l'utilisateur est connecté
@@ -43,10 +44,21 @@ struct MainApp: View {
             }
             .accentColor(.blue) // Couleur principale de la barre (modifiable)
         } else {
-            // Affiche l'écran de connexion si l'utilisateur n'est pas connecté
-            LoginScreen(onNext: {
-                isLoggedIn = true // Réactive la TabView après connexion
-            })
+            if isCreatingAccount { // Affiche la page de création de compte si nécessaire
+                SignUpScreen(onSignUpComplete: {
+                    isCreatingAccount = false // Retourne à l'écran de connexion après la création de compte
+                })
+            } else {
+                // Affiche l'écran de connexion si l'utilisateur n'est pas connecté
+                LoginScreen(
+                    onLogin: {
+                        isLoggedIn = true // Réactive la TabView après connexion
+                    },
+                    onSignUp: {
+                        isCreatingAccount = true // Passe à l'écran de création de compte
+                    }
+                )
+            }
         }
     }
 }

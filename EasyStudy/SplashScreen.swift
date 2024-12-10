@@ -1,54 +1,46 @@
-import SwiftUI // Importation du framework SwiftUI
+import SwiftUI
 
-// Vue de l'écran de démarrage (Splash Screen)
 struct SplashScreen: View {
-    var onNext: () -> Void // Closure pour passer à l'écran suivant
+    var onNext: () -> Void // Closure pour naviguer vers la page suivante
 
     var body: some View {
-        VStack(spacing: 30) { // Conteneur vertical avec un espacement entre les éléments
-            // Image illustrant l'écran d'accueil
-            Image(systemName: "person.3.fill") // Exemple d'icône SF Symbols
-                .resizable() // Rend l'image redimensionnable
-                .scaledToFit() // Maintient les proportions de l'image
-                .frame(height: 200) // Définit une hauteur fixe
-                .foregroundColor(.blue) // Change la couleur de l'image
-                .padding() // Ajoute de l'espace autour de l'image
+        VStack(spacing: 30) {
+            Image("splash_image") // Remplacez "splash_image" par votre asset d'image
+                .resizable()
+                .scaledToFit()
+                .frame(height: 250) // Hauteur de l'image
+                .padding(.top, 50)
 
-            // Titre principal
             Text("Easy Study")
-                .font(.largeTitle) // Taille de police importante
-                .fontWeight(.bold) // Texte en gras
-                .foregroundColor(.blue) // Texte bleu
+                .font(.largeTitle)
+                .fontWeight(.bold)
 
-            // Sous-titre de l'écran
             Text("Connect to Learn, Share, and Succeed!")
-                .font(.title3) // Taille de police moyenne
-                .foregroundColor(.gray) // Texte en gris
-                .multilineTextAlignment(.center) // Centre le texte sur plusieurs lignes
+                .font(.title3)
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
 
-            Spacer() // Ajoute un espace flexible pour pousser les éléments vers le haut
+            Spacer()
 
-            // Bouton pour aller à l'écran suivant
             Button(action: {
-                onNext() // Appelle la closure pour naviguer vers LoginScreen
+                onNext()
             }) {
-                Text("Get Started") // Texte du bouton
-                    .font(.headline) // Texte légèrement plus grand
-                    .padding() // Ajoute de l'espace intérieur
-                    .frame(maxWidth: .infinity) // Étend le bouton sur toute la largeur disponible
-                    .background(Color.blue) // Couleur de fond bleue
-                    .foregroundColor(.white) // Texte en blanc
-                    .cornerRadius(10) // Coins arrondis
-                    .padding(.horizontal) // Ajoute de l'espace horizontal
+                Text("Get Started")
+                    .font(.headline)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .padding(.horizontal)
             }
-
-            Spacer() // Ajoute un espace flexible sous le bouton
         }
-        .padding() // Ajoute de l'espace autour du conteneur
+        .padding()
+        .background(Color.white) // Fond blanc
+        .edgesIgnoringSafeArea(.all) // Étend le fond à toute la zone visible
     }
 }
 
-// Aperçu pour Xcode
 struct SplashScreen_Previews: PreviewProvider {
     static var previews: some View {
         SplashScreen(onNext: {})
