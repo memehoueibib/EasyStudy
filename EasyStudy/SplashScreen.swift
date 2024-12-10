@@ -1,52 +1,56 @@
-import SwiftUI // Importation du framework SwiftUI pour la création de l'interface utilisateur
+import SwiftUI // Importation du framework SwiftUI
 
-// Définition de la vue SplashScreen
+// Vue de l'écran de démarrage (Splash Screen)
 struct SplashScreen: View {
-    // Corps de la vue
+    var onNext: () -> Void // Closure pour passer à l'écran suivant
+
     var body: some View {
-        VStack(spacing: 20) { // Un conteneur vertical avec un espacement entre les éléments
-            // Image représentant un groupe d'utilisateurs
-            Image(systemName: "person.3.fill") // Utilisation d'une icône SF Symbols
+        VStack(spacing: 30) { // Conteneur vertical avec un espacement entre les éléments
+            // Image illustrant l'écran d'accueil
+            Image(systemName: "person.3.fill") // Exemple d'icône SF Symbols
                 .resizable() // Rend l'image redimensionnable
                 .scaledToFit() // Maintient les proportions de l'image
-                .frame(height: 200) // Définit une hauteur fixe pour l'image
+                .frame(height: 200) // Définit une hauteur fixe
+                .foregroundColor(.blue) // Change la couleur de l'image
                 .padding() // Ajoute de l'espace autour de l'image
 
-            // Titre principal de l'écran
+            // Titre principal
             Text("Easy Study")
-                .font(.largeTitle) // Définit une grande taille de police
-                .fontWeight(.bold) // Applique un style gras au texte
+                .font(.largeTitle) // Taille de police importante
+                .fontWeight(.bold) // Texte en gras
+                .foregroundColor(.blue) // Texte bleu
 
             // Sous-titre de l'écran
             Text("Connect to Learn, Share, and Succeed!")
-                .font(.title3) // Définit une taille de police moyenne
-                .foregroundColor(.gray) // Change la couleur du texte en gris
+                .font(.title3) // Taille de police moyenne
+                .foregroundColor(.gray) // Texte en gris
                 .multilineTextAlignment(.center) // Centre le texte sur plusieurs lignes
 
             Spacer() // Ajoute un espace flexible pour pousser les éléments vers le haut
 
-            // Bouton pour accéder à l'écran suivant
+            // Bouton pour aller à l'écran suivant
             Button(action: {
-                // Action à exécuter lorsque le bouton est pressé
-                // Par exemple : Navigation vers l'écran de connexion
+                onNext() // Appelle la closure pour naviguer vers LoginScreen
             }) {
-                Text("Get Started") // Texte affiché sur le bouton
-                    .font(.headline) // Taille de police légèrement plus grande
-                    .padding() // Ajoute de l'espace intérieur au bouton
+                Text("Get Started") // Texte du bouton
+                    .font(.headline) // Texte légèrement plus grand
+                    .padding() // Ajoute de l'espace intérieur
                     .frame(maxWidth: .infinity) // Étend le bouton sur toute la largeur disponible
-                    .background(Color.blue) // Ajoute un fond bleu au bouton
-                    .foregroundColor(.white) // Change la couleur du texte en blanc
-                    .cornerRadius(10) // Arrondit les coins du bouton
-                    .padding(.horizontal) // Ajoute un espace horizontal autour du bouton
+                    .background(Color.blue) // Couleur de fond bleue
+                    .foregroundColor(.white) // Texte en blanc
+                    .cornerRadius(10) // Coins arrondis
+                    .padding(.horizontal) // Ajoute de l'espace horizontal
             }
+
+            Spacer() // Ajoute un espace flexible sous le bouton
         }
-        .padding() // Ajoute de l'espace autour de tout le conteneur VStack
+        .padding() // Ajoute de l'espace autour du conteneur
     }
 }
 
-// Aperçu de la vue SplashScreen
+// Aperçu pour Xcode
 struct SplashScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SplashScreen() // Permet de prévisualiser la vue dans Xcode
+        SplashScreen(onNext: {})
     }
 }
