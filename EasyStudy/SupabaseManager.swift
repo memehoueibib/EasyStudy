@@ -1,4 +1,5 @@
 import Supabase
+import Foundation
 
 class SupabaseManager {
     static let shared = SupabaseManager()
