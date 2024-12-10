@@ -11,7 +11,7 @@ import SwiftUI
 struct EasyStudyApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashScreen()
         }
     }
 }
