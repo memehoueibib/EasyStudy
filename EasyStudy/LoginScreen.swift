@@ -1,96 +1,57 @@
 import SwiftUI
 
 struct LoginScreen: View {
-    var onLogin: () -> Void // Closure pour gérer la connexion
-    var onSignUp: () -> Void // Closure pour naviguer vers la page de création de compte
+    var onLogin: () -> Void
+    var onSignUp: () -> Void
 
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var errorMessage: String?
 
     var body: some View {
         VStack(spacing: 20) {
-            // Bouton retour
-            HStack {
-                Button(action: {
-                    // Ajoutez une action ici si nécessaire
-                }) {
-                    Image(systemName: "arrow.backward")
-                        .font(.title)
-                        .foregroundColor(.blue)
-                        .padding()
-                }
-                Spacer()
-            }
-
-            Spacer()
-
             Text("Hello, Welcome Back")
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
-            Text("Log in to start your Easy Study journey!")
-                .font(.subheadline)
-                .foregroundColor(.gray)
+            TextField("Email Address", text: $email)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
 
-            VStack(spacing: 20) {
-                TextField("Email Address", text: $email)
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(10)
+            SecureField("Password", text: $password)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
 
-                SecureField("Password", text: $password)
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(10)
-
-                Button(action: {
-                    // Action pour mot de passe oublié
-                }) {
-                    Text("Forgot Password?")
-                        .font(.footnote)
-                        .foregroundColor(.blue)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                }
-
-                Button(action: {
-                    onLogin() // Appelle la closure pour naviguer
-                }) {
-                    Text("Login")
-                        .font(.headline)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
+            if let errorMessage = errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+                    .font(.footnote)
             }
-            .padding()
-
-            HStack {
-                Text("Or Login with")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Spacer()
-            }
-
-            HStack(spacing: 20) {
-                Image(systemName: "globe") // Icône pour Google
-                    .resizable()
-                    .frame(width: 40, height: 40)
-
-                Image(systemName: "applelogo") // Icône pour Apple
-                    .resizable()
-                    .frame(width: 40, height: 40)
-
-                Image(systemName: "facebook") // Icône pour Facebook
-                    .resizable()
-                    .frame(width: 40, height: 40)
-            }
-
-            Spacer()
 
             Button(action: {
-                onSignUp() // Navigue vers la page de création de compte
+                Task {
+                    do {
+                        let successMessage = try await AuthService.shared.signIn(email: email, password: password)
+                        print(successMessage)
+                        onLogin()
+                    } catch {
+                        errorMessage = error.localizedDescription
+                    }
+                }
+            }) {
+                Text("Login")
+                    .font(.headline)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+
+            Button(action: {
+                onSignUp()
             }) {
                 Text("Don't have an account? Sign up")
                     .font(.footnote)
@@ -98,8 +59,6 @@ struct LoginScreen: View {
             }
         }
         .padding()
-        .background(Color.white)
-        .edgesIgnoringSafeArea(.all)
     }
 }
 

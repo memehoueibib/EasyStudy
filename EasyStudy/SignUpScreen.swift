@@ -1,45 +1,56 @@
 import SwiftUI
 
 struct SignUpScreen: View {
-    var onSignUpComplete: () -> Void // Closure pour revenir à la page de connexion
+    var onSignUpComplete: () -> Void
 
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var confirmPassword: String = ""
+    @State private var errorMessage: String?
 
     var body: some View {
-        ScrollView { // Ajout d'un ScrollView pour éviter l'overflow
+        ScrollView {
             VStack(spacing: 20) {
-                Spacer()
-
                 Text("Create Account")
                     .font(.largeTitle)
                     .fontWeight(.bold)
 
-                Text("Sign up to start your Easy Study journey!")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+                TextField("Email Address", text: $email)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(10)
 
-                VStack(spacing: 20) {
-                    TextField("Email Address", text: $email)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(10)
+                SecureField("Password", text: $password)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(10)
 
-                    SecureField("Password", text: $password)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(10)
+                SecureField("Confirm Password", text: $confirmPassword)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(10)
 
-                    SecureField("Confirm Password", text: $confirmPassword)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(10)
+                if let errorMessage = errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.footnote)
                 }
-                .padding()
 
                 Button(action: {
-                    onSignUpComplete() // Navigue vers la page de connexion
+                    Task {
+                        guard password == confirmPassword else {
+                            errorMessage = "Passwords do not match"
+                            return
+                        }
+
+                        do {
+                            let successMessage = try await AuthService.shared.signUp(email: email, password: password)
+                            print(successMessage)
+                            onSignUpComplete()
+                        } catch {
+                            errorMessage = error.localizedDescription
+                        }
+                    }
                 }) {
                     Text("Sign Up")
                         .font(.headline)
@@ -49,10 +60,14 @@ struct SignUpScreen: View {
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
-
-                Spacer()
             }
             .padding()
         }
+    }
+}
+
+struct SignUpScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        SignUpScreen(onSignUpComplete: {})
     }
 }
