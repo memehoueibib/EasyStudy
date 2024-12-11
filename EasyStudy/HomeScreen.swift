@@ -1,25 +1,18 @@
 import SwiftUI
 
 struct HomeScreen: View {
-    @State private var searchText: String = "" // Texte de la barre de recherche
-    @State private var selectedCategory: Int = 0 // Gère l'onglet sélectionné dans les catégories
-
-    // Exemple de données pour les discussions récentes
-    let discussions = [
-        ("Robert Fox (JS)", "Hey, let’s talk about react", "15.43"),
-        ("Esther Howard (PHP)", "Hey, let’s talk about Symphony", "15.29"),
-        ("Jacob Jones (HTML)", "Hey, let’s talk about html", "14.53"),
-        ("Bessie Cooper (CSS)", "Hey, let’s talk about SCSS", "12.27"),
-        ("Albert Flores (Python)", "Hey, let’s talk about Django", "12.20"),
-        ("Floyd Miles (SQL)", "Hey, let’s talk about SQL", "11.40")
-    ]
+    @State private var searchText: String = ""
+    @State private var showAddCategoryModal: Bool = false
+    @State private var categories: [Category] = []
+    @State private var isLoading: Bool = true
+    @State private var errorMessage: String? = nil
 
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                // Barre de recherche
+                // Barre de recherche et bouton d'ajout
                 HStack {
-                    TextField("Search Topics or Questions", text: $searchText)
+                    TextField("Search Categories", text: $searchText)
                         .padding()
                         .background(Color.gray.opacity(0.2))
                         .cornerRadius(10)
@@ -33,9 +26,9 @@ struct HomeScreen: View {
                         )
 
                     Button(action: {
-                        // Action pour scanner ou ajouter une fonctionnalité
+                        showAddCategoryModal = true
                     }) {
-                        Image(systemName: "viewfinder")
+                        Image(systemName: "plus.circle.fill")
                             .foregroundColor(.blue)
                             .font(.title2)
                             .padding()
@@ -43,84 +36,62 @@ struct HomeScreen: View {
                 }
                 .padding(.horizontal)
 
-                // Onglets des catégories
-                HStack(spacing: 30) {
-                    Button(action: {
-                        selectedCategory = 0
-                    }) {
-                        VStack {
-                            Text("Recent Questions")
-                                .font(.headline)
-                                .foregroundColor(selectedCategory == 0 ? .blue : .gray)
-                            if selectedCategory == 0 {
-                                Capsule()
-                                    .fill(Color.blue)
-                                    .frame(width: 100, height: 3)
+                if isLoading {
+                    ProgressView("Loading categories...")
+                        .padding()
+                } else if let errorMessage = errorMessage {
+                    Text("Error: \(errorMessage)")
+                        .foregroundColor(.red)
+                        .padding()
+                } else {
+                    List(filteredCategories(), id: \.id) { category in
+                        NavigationLink(destination: CategoryDiscussionsView(category: category)) {
+                            HStack {
+                                Text(category.name)
+                                    .font(.headline)
+                                Spacer()
+                                if let createdAt = category.created_at {
+                                    Text(createdAt)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
                             }
                         }
                     }
-
-                    Button(action: {
-                        selectedCategory = 1
-                    }) {
-                        VStack {
-                            Text("My Discussions")
-                                .font(.headline)
-                                .foregroundColor(selectedCategory == 1 ? .blue : .gray)
-                            if selectedCategory == 1 {
-                                Capsule()
-                                    .fill(Color.blue)
-                                    .frame(width: 100, height: 3)
-                            }
-                        }
-                    }
-
-                    Button(action: {
-                        selectedCategory = 2
-                    }) {
-                        VStack {
-                            Text("Categories")
-                                .font(.headline)
-                                .foregroundColor(selectedCategory == 2 ? .blue : .gray)
-                            if selectedCategory == 2 {
-                                Capsule()
-                                    .fill(Color.blue)
-                                    .frame(width: 80, height: 3)
-                            }
-                        }
-                    }
+                    .listStyle(PlainListStyle())
                 }
-
-                // Liste des discussions récentes
-                List(discussions, id: \.0) { discussion in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(discussion.0)
-                                .font(.headline)
-                                .fontWeight(.bold)
-
-                            Text(discussion.1)
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                        }
-
-                        Spacer()
-
-                        Text(discussion.2)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
-                    .padding(.vertical, 5)
-                }
-                .listStyle(PlainListStyle())
             }
-            .navigationTitle("Home") // Titre dans la barre de navigation
+            .navigationTitle("Home")
+            .onAppear {
+                fetchCategories()
+            }
+            .sheet(isPresented: $showAddCategoryModal) {
+                AddCategoryModal(onCategoryAdded: { newCategory in
+                    categories.append(newCategory)
+                })
+            }
         }
     }
-}
 
-struct HomeScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeScreen()
+    private func filteredCategories() -> [Category] {
+        if searchText.isEmpty {
+            return categories
+        } else {
+            return categories.filter { $0.name.lowercased().contains(searchText.lowercased()) }
+        }
+    }
+
+    private func fetchCategories() {
+        isLoading = true
+        errorMessage = nil
+        Task {
+            do {
+                categories = try await AuthService.shared.fetchCategories()
+                isLoading = false
+            } catch {
+                errorMessage = error.localizedDescription
+                isLoading = false
+            }
+        }
     }
 }
