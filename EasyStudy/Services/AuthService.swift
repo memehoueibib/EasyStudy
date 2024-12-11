@@ -59,7 +59,7 @@ class AuthService {
         let response: PostgrestResponse<[Discussion]> = try await client
             .from("discussions")
             .select()
-            .eq("category_id", value: categoryId) // Retirer 'value:'
+            .eq("category_id", value: categoryId)
             .execute()
 
         return response.value
@@ -95,12 +95,13 @@ class AuthService {
         let response: PostgrestResponse<[Message]> = try await client
             .from("messages")
             .select()
-            .eq("discussion_id", value: discussionId) // Retirer 'value:'
+            .eq("discussion_id", value: discussionId)
             .execute()
 
         return response.value
     }
-    
+
+    // Récupération des notifications
     func fetchNotifications(for userId: UUID) async throws -> [NotificationItem] {
         let response: PostgrestResponse<[NotificationItem]> = try await client
             .from("notifications")
@@ -108,26 +109,37 @@ class AuthService {
             .eq("user_id", value: userId)
             .order("created_at", ascending: false)
             .execute()
-        
+
         return response.value
     }
-    
-    // Insère l'entrée dans la table users après la création du compte dans auth.users
+
+    // Structs pour insertion / mise à jour
+    struct InsertUser: Encodable {
+        let id: UUID
+        let name: String
+        let email: String
+    }
+
+    struct UpdateUserName: Encodable {
+        let name: String
+    }
+
+    // Insère l'entrée dans la table users
     func insertUserEntry(name: String) async throws {
         let session = try await client.auth.session
         let user = session.user
 
-        // Insertion dans la table users
-        let data: [String: AnyEncodable] = [
-            "id": AnyEncodable(user.id),
-            "name": AnyEncodable(name),
-            "email": AnyEncodable(user.email ?? "")
-        ]
-
+        let newUser = InsertUser(id: user.id, name: name, email: user.email ?? "")
         _ = try await client
             .from("users")
-            .insert(data)
+            .insert(newUser)
             .execute()
+    }
+
+    struct UserRow: Codable {
+        let id: UUID
+        let name: String?
+        let email: String?
     }
 
     // Récupère les infos du profil de l'utilisateur
@@ -135,20 +147,14 @@ class AuthService {
         let session = try await client.auth.session
         let user = session.user
 
-        let response = try await client
+        let response: PostgrestResponse<UserRow> = try await client
             .from("users")
             .select()
             .eq("id", value: user.id)
             .single()
             .execute()
 
-        struct UserRow: Codable {
-            let id: UUID
-            let name: String?
-            let email: String?
-        }
-
-        let userRow = try response.decoded(to: UserRow.self)
+        let userRow = response.value
         return (userRow.id, userRow.name ?? "", userRow.email)
     }
 
@@ -157,13 +163,10 @@ class AuthService {
         let session = try await client.auth.session
         let user = session.user
 
-        let updates: [String: AnyEncodable] = [
-            "name": AnyEncodable(name)
-        ]
-
+        let updateData = UpdateUserName(name: name)
         _ = try await client
             .from("users")
-            .update(updates)
+            .update(updateData)
             .eq("id", value: user.id)
             .execute()
     }
