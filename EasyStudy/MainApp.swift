@@ -21,14 +21,6 @@ struct MainApp: View {
                     }
                     .tag(0) // Index de cet onglet
 
-                // Onglet 2 : Ajouter une catégorie
-                HistoryScreen()
-                    .tabItem {
-                        Image(systemName: selectedTab == 1 ? "plus.square.fill" : "plus.square") // Icône pour Ajouter
-                        Text("Add")
-                    }
-                    .tag(1) // Index de cet onglet
-
                 // Onglet 3 : Chat
                 ChatScreen()
                     .tabItem {

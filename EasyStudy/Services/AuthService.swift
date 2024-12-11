@@ -5,6 +5,9 @@ class AuthService {
     static let shared = AuthService()
 
     private let client = SupabaseManager.shared.getClient()
+    var supabaseClient: SupabaseClient {
+        client
+    }
 
     private init() {}
 
@@ -37,7 +40,6 @@ class AuthService {
 
     // Ajout d'une catégorie
     func addCategory(name: String) async throws -> Category {
-        // session n'est pas optionnel, pas besoin de guard let
         let session = try await client.auth.session
         let user = session.user
 
@@ -57,7 +59,16 @@ class AuthService {
         let response: PostgrestResponse<[Discussion]> = try await client
             .from("discussions")
             .select()
-            .eq("category_id", value: categoryId) // Enlever 'value:' ici
+            .eq("category_id", value: categoryId) // Retirer 'value:'
+            .execute()
+
+        return response.value
+    }
+
+    // Récupération des discussions utilisateur (si vous avez cette RPC)
+    func fetchUserDiscussions(userId: UUID) async throws -> [Discussion] {
+        let response: PostgrestResponse<[Discussion]> = try await client
+            .rpc("get_user_discussions", params: ["user_id": userId])
             .execute()
 
         return response.value
@@ -84,7 +95,7 @@ class AuthService {
         let response: PostgrestResponse<[Message]> = try await client
             .from("messages")
             .select()
-            .eq("discussion_id", value: discussionId) // Enlever 'value:' ici
+            .eq("discussion_id", value: discussionId) // Retirer 'value:'
             .execute()
 
         return response.value
