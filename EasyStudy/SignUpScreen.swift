@@ -3,6 +3,7 @@ import SwiftUI
 struct SignUpScreen: View {
     var onSignUpComplete: () -> Void
 
+    @State private var name: String = ""
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var confirmPassword: String = ""
@@ -14,6 +15,11 @@ struct SignUpScreen: View {
                 Text("Create Account")
                     .font(.largeTitle)
                     .fontWeight(.bold)
+
+                TextField("Name", text: $name)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(10)
 
                 TextField("Email Address", text: $email)
                     .padding()
@@ -46,6 +52,8 @@ struct SignUpScreen: View {
                         do {
                             let successMessage = try await AuthService.shared.signUp(email: email, password: password)
                             print(successMessage)
+                            // Insertion dans la table users
+                            try await AuthService.shared.insertUserEntry(name: name)
                             onSignUpComplete()
                         } catch {
                             errorMessage = error.localizedDescription
@@ -63,11 +71,5 @@ struct SignUpScreen: View {
             }
             .padding()
         }
-    }
-}
-
-struct SignUpScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        SignUpScreen(onSignUpComplete: {})
     }
 }

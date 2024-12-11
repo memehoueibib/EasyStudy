@@ -22,3 +22,10 @@ struct Message: Codable, Identifiable {
     let content: String
     let created_at: String?
 }
+
+struct NotificationItem: Codable, Identifiable {
+    let id: UUID
+    let user_id: UUID
+    let message: String
+    let created_at: String?
+}

@@ -16,3 +16,14 @@ struct InsertMessage: Encodable {
     let discussion_id: UUID
     let author_id: UUID
 }
+
+struct InsertUser: Encodable {
+    let id: UUID
+    let name: String
+    let email: String
+}
+
+struct UpdateUserName: Encodable {
+    let name: String
+}
+

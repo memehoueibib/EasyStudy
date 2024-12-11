@@ -100,6 +100,73 @@ class AuthService {
 
         return response.value
     }
+    
+    func fetchNotifications(for userId: UUID) async throws -> [NotificationItem] {
+        let response: PostgrestResponse<[NotificationItem]> = try await client
+            .from("notifications")
+            .select()
+            .eq("user_id", value: userId)
+            .order("created_at", ascending: false)
+            .execute()
+        
+        return response.value
+    }
+    
+    // Insère l'entrée dans la table users après la création du compte dans auth.users
+    func insertUserEntry(name: String) async throws {
+        let session = try await client.auth.session
+        let user = session.user
+
+        // Insertion dans la table users
+        let data: [String: AnyEncodable] = [
+            "id": AnyEncodable(user.id),
+            "name": AnyEncodable(name),
+            "email": AnyEncodable(user.email ?? "")
+        ]
+
+        _ = try await client
+            .from("users")
+            .insert(data)
+            .execute()
+    }
+
+    // Récupère les infos du profil de l'utilisateur
+    func fetchUserProfile() async throws -> (id: UUID, name: String, email: String?) {
+        let session = try await client.auth.session
+        let user = session.user
+
+        let response = try await client
+            .from("users")
+            .select()
+            .eq("id", value: user.id)
+            .single()
+            .execute()
+
+        struct UserRow: Codable {
+            let id: UUID
+            let name: String?
+            let email: String?
+        }
+
+        let userRow = try response.decoded(to: UserRow.self)
+        return (userRow.id, userRow.name ?? "", userRow.email)
+    }
+
+    // Met à jour le nom de l'utilisateur
+    func updateUserName(_ name: String) async throws {
+        let session = try await client.auth.session
+        let user = session.user
+
+        let updates: [String: AnyEncodable] = [
+            "name": AnyEncodable(name)
+        ]
+
+        _ = try await client
+            .from("users")
+            .update(updates)
+            .eq("id", value: user.id)
+            .execute()
+    }
 
     // Envoi d'un message
     func sendMessage(content: String, discussionId: UUID) async throws -> Message {
