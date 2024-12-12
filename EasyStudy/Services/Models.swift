@@ -3,7 +3,7 @@ import Foundation
 struct Category: Codable, Identifiable {
     let id: UUID
     let name: String
-    let users: User
+    let users: User?
     let created_at: String?
     let created_by: UUID?
 }

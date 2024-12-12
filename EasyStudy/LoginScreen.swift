@@ -38,6 +38,7 @@ struct LoginScreen: View {
                 TextField("Email Address", text: $email)
                     .padding()
                     .background(Color.gray.opacity(0.1))
+                    .textInputAutocapitalization(.never) // Disable automatic capitalization
                     .cornerRadius(10)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
@@ -60,6 +61,10 @@ struct LoginScreen: View {
                         .font(.footnote)
                         .foregroundColor(.red)
                         .frame(maxWidth: .infinity, alignment: .trailing)
+                    
+
+
+                    Spacer()
                 }
             }
             .padding(.horizontal)
@@ -85,10 +90,22 @@ struct LoginScreen: View {
                     .cornerRadius(10)
             }
             .padding(.horizontal)
-            
+            Button(action: {
+                           onSignUp()
+                       }) {
+                           Text("Don't have an account? Sign up")
+                               .font(.footnote)
+                               .foregroundColor(.blue)
+                               Spacer()
+                           }
+                           .background(Color.white)
+                           .edgesIgnoringSafeArea(.all)
+                       
             Spacer()
+        
         }
         .background(Color.white)
+        .padding()
         .edgesIgnoringSafeArea(.all)
     }
 }

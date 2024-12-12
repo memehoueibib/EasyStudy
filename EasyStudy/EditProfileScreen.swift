@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EditProfileScreen: View {
-    @State private var name: String = ""
+    @State private var username: String = ""
     @State private var email: String = ""
     @State private var isLoading = true
     @State private var errorMessage: String?
@@ -13,7 +13,7 @@ struct EditProfileScreen: View {
                 ProgressView("Loading profile...")
             } else {
                 Section(header: Text("Personal Information")) {
-                    TextField("Name", text: $name)
+                    TextField("Name", text: $username)
                 }
 
                 Section(header: Text("Email")) {
@@ -30,7 +30,7 @@ struct EditProfileScreen: View {
                     Button("Save") {
                         Task {
                             do {
-                                try await AuthService.shared.updateUserName(name)
+                                try await AuthService.shared.updateUserName(username)
                                 presentationMode.wrappedValue.dismiss()
                             } catch {
                                 errorMessage = error.localizedDescription
@@ -50,8 +50,8 @@ struct EditProfileScreen: View {
         Task {
             do {
                 let profile = try await AuthService.shared.fetchUserProfile()
-                name = profile.name
-                email = profile.email ?? ""
+                username = profile.username
+                email = profile.email
                 isLoading = false
             } catch {
                 errorMessage = error.localizedDescription

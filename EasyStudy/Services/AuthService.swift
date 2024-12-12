@@ -68,7 +68,10 @@ class AuthService {
         let response: PostgrestResponse<Category> = try await client
             .from("categories")
             .insert(newCategoryData)
-            .select()
+            .select("""
+            *,
+            users(id, username, email)
+            """)
             .single()
             .execute()
 
@@ -145,7 +148,7 @@ class AuthService {
     }
 
     struct UpdateUserName: Encodable {
-        let name: String
+        let username: String
     }
 
     // Insère l'entrée dans la table users
@@ -167,27 +170,26 @@ class AuthService {
     }
 
     // Récupère les infos du profil de l'utilisateur
-    func fetchUserProfile() async throws -> (id: UUID, name: String, email: String?) {
+    func fetchUserProfile() async throws -> User {
         let session = try await client.auth.session
         let user = session.user
 
-        let response: PostgrestResponse<UserRow> = try await client
+        let response: PostgrestResponse<User> = try await client
             .from("users")
             .select()
             .eq("id", value: user.id)
             .single()
             .execute()
 
-        let userRow = response.value
-        return (userRow.id, userRow.name ?? "", userRow.email)
+        return response.value
     }
 
     // Met à jour le nom de l'utilisateur
-    func updateUserName(_ name: String) async throws {
+    func updateUserName(_ username: String) async throws {
         let session = try await client.auth.session
         let user = session.user
 
-        let updateData = UpdateUserName(name: name)
+        let updateData = UpdateUserName(username: username)
         _ = try await client
             .from("users")
             .update(updateData)

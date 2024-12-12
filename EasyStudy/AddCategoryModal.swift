@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AddCategoryModal: View {
+    @Environment(\.presentationMode) var presentationMode // Add this to handle modal dismissal
     @State private var categoryName: String = ""
     @State private var isSaving: Bool = false
     @State private var errorMessage: String? = nil
@@ -44,6 +45,13 @@ struct AddCategoryModal: View {
             }
             .padding()
             .navigationTitle("Add Category")
+            .toolbar { // Add a cancel button to the navigation bar
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismissModal()
+                    }
+                }
+            }
         }
     }
 
@@ -61,10 +69,15 @@ struct AddCategoryModal: View {
                 let newCategory = try await AuthService.shared.addCategory(name: categoryName)
                 onCategoryAdded(newCategory)
                 isSaving = false
+                dismissModal() // Dismiss the modal after successfully saving
             } catch {
                 errorMessage = error.localizedDescription
                 isSaving = false
             }
         }
+    }
+
+    private func dismissModal() {
+        presentationMode.wrappedValue.dismiss() // Dismiss the modal
     }
 }

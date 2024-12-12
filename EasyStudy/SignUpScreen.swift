@@ -23,6 +23,7 @@ struct SignUpScreen: View {
 
                 TextField("Email Address", text: $email)
                     .padding()
+                    .textInputAutocapitalization(.never) // Disable automatic capitalization
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
 
