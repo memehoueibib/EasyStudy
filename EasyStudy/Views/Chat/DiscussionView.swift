@@ -104,7 +104,7 @@ struct DiscussionView: View {
                 VStack(alignment: .trailing, spacing: 8) {
                     Text("You")
                         .font(.caption)
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color(red: 0.58, green: 0.0, blue: 0.83))
 
                     Text(message.content)
                         .font(.body)
