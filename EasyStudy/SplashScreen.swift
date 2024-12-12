@@ -60,7 +60,7 @@ struct SplashScreen: View {
                         .font(.headline)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color.blue)
+                        .background(Color(red: 0.58, green: 0.0, blue: 0.83))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         .padding(.horizontal)

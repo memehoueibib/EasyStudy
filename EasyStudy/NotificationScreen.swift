@@ -34,7 +34,7 @@ struct NotificationScreen: View {
                         List(notifications) { notification in
                             HStack(alignment: .top, spacing: 10) {
                                 Image(systemName: "bell.fill")
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(Color(red: 0.58, green: 0.0, blue: 0.83))
                                     .font(.title2)
                                     .padding(.top, 4)
 
@@ -72,7 +72,7 @@ struct NotificationScreen: View {
             do {
                 let session = try await AuthService.shared.supabaseClient.auth.session
                 let user = session.user
-                notifications = try await AuthService.shared.fetchNotifications(for: user.id)
+                notifications = try await DiscussionService.shared.fetchNotifications(for: user.id)
                 isLoading = false
             } catch {
                 errorMessage = error.localizedDescription

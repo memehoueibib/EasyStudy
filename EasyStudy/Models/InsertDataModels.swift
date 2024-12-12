@@ -19,7 +19,7 @@ struct InsertMessage: Encodable {
 
 struct InsertUser: Encodable {
     let id: UUID
-    let name: String
+    let username: String
     let email: String
 }
 

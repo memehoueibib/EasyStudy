@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AddCategoryModal: View {
-    @Environment(\.presentationMode) var presentationMode // Add this to handle modal dismissal
+    @Environment(\.presentationMode) var presentationMode // To handle modal dismissal
     @State private var categoryName: String = ""
     @State private var isSaving: Bool = false
     @State private var errorMessage: String? = nil
@@ -11,31 +11,34 @@ struct AddCategoryModal: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                Text("Add a New Category")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                Text("Enter a unique and descriptive name for the new category. This will help you organize your items more effectively.")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
 
                 TextField("Category Name", text: $categoryName)
                     .padding()
                     .background(Color.gray.opacity(0.2))
+                
                     .cornerRadius(10)
 
                 if let errorMessage = errorMessage {
-                    Text("Error: \(errorMessage)")
+                    Text(errorMessage)
                         .foregroundColor(.red)
+                        .font(.footnote)
                 }
 
                 if isSaving {
-                    ProgressView()
+                    ProgressView("Saving...")
                 } else {
                     Button(action: {
                         saveCategoryToSupabase(categoryName: categoryName)
                     }) {
-                        Text("Add Category")
+                        Text("Create Category")
                             .font(.headline)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(Color(red: 0.58, green: 0.0, blue: 0.83))
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
@@ -44,12 +47,13 @@ struct AddCategoryModal: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle("Add Category")
-            .toolbar { // Add a cancel button to the navigation bar
+            .navigationTitle("Create new Category")
+            .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         dismissModal()
                     }
+                    .foregroundColor(Color(red: 0.58, green: 0.0, blue: 0.83))
                 }
             }
         }
@@ -57,7 +61,7 @@ struct AddCategoryModal: View {
 
     private func saveCategoryToSupabase(categoryName: String) {
         guard !categoryName.isEmpty else {
-            errorMessage = "Category name cannot be empty"
+            errorMessage = "Please provide a category name."
             return
         }
 
@@ -66,18 +70,18 @@ struct AddCategoryModal: View {
 
         Task {
             do {
-                let newCategory = try await AuthService.shared.addCategory(name: categoryName)
+                let newCategory = try await CategoryService.shared.addCategory(name: categoryName)
                 onCategoryAdded(newCategory)
                 isSaving = false
-                dismissModal() // Dismiss the modal after successfully saving
+                dismissModal()
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = "Failed to save category. Please try again."
                 isSaving = false
             }
         }
     }
 
     private func dismissModal() {
-        presentationMode.wrappedValue.dismiss() // Dismiss the modal
+        presentationMode.wrappedValue.dismiss()
     }
 }

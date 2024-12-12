@@ -54,6 +54,7 @@ struct LoginScreen: View {
                             .stroke(Color.gray.opacity(0.4), lineWidth: 1)
                     )
                 
+                
                 Button(action: {
                     // Forgot Password Action
                 }) {
@@ -61,6 +62,7 @@ struct LoginScreen: View {
                         .font(.footnote)
                         .foregroundColor(.red)
                         .frame(maxWidth: .infinity, alignment: .trailing)
+                    
                     
 
 
@@ -85,23 +87,32 @@ struct LoginScreen: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
+                    .background(Color(red: 0.58, green: 0.0, blue: 0.83)) // Violet color
+                     .foregroundColor(.white) // White text
                     .cornerRadius(10)
             }
+
             .padding(.horizontal)
-            Button(action: {
-                           onSignUp()
-                       }) {
-                           Text("Don't have an account? Sign up")
-                               .font(.footnote)
-                               .foregroundColor(.blue)
-                               Spacer()
-                           }
-                           .background(Color.white)
-                           .edgesIgnoringSafeArea(.all)
-                       
-            Spacer()
+            VStack {
+                Spacer() // Push content to the center vertically
+
+                Button(action: {
+                    onSignUp()
+                }) {
+                    Text("Don't have an account? Sign up")
+                        .font(.footnote)
+                        .foregroundColor(Color(red: 0.58, green: 0.0, blue: 0.83)) // Violet color
+                        .fontWeight(.bold)
+                }
+                .padding()
+                .background(Color.white)
+                .cornerRadius(10)
+                .shadow(radius: 5) // Optional shadow for better visibility
+
+                Spacer() // Push content to the center vertically
+            }
+            .padding() // Optional padding for additional spacing
+
         
         }
         .background(Color.white)

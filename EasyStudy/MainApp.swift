@@ -1,67 +1,64 @@
 import SwiftUI
 
 struct MainApp: View {
-    @State private var selectedTab: Int = 0 // Gère l'onglet sélectionné (index de 0 à 4)
-    @State private var isLoggedIn: Bool = false // Gère l'état de connexion
-    @State private var isCreatingAccount: Bool = false // Gère l'état de création de compte
-    @State private var showSplash: Bool = true // Affiche la SplashScreen au début
+    @State private var selectedTab: Int = 0
+    @State private var isLoggedIn: Bool = false
+    @State private var isCreatingAccount: Bool = false
+    @State private var showSplash: Bool = true
 
     var body: some View {
-        if showSplash { // Affiche la SplashScreen en premier
+        if showSplash {
             SplashScreen(onNext: {
-                showSplash = false // Masque la SplashScreen pour afficher LoginScreen
+                showSplash = false
             })
-        } else if isLoggedIn { // Affiche la TabView si l'utilisateur est connecté
-            TabView(selection: $selectedTab) { // Création de la barre d'onglets
-                // Onglet 1 : Accueil
+        } else if isLoggedIn {
+            TabView(selection: $selectedTab) {
+                // Home Tab
                 HomeScreen()
                     .tabItem {
-                        Image(systemName: selectedTab == 0 ? "house.fill" : "house") // Icône pour Accueil
-                        Text("Home")
+                        CustomTabItem(icon: "house", text: "Home", isSelected: selectedTab == 0)
                     }
-                    .tag(0) // Index de cet onglet
+                    .tag(0)
 
-                // Onglet 3 : Chat
+                // Chat Tab
                 ChatScreen()
                     .tabItem {
-                        Image(systemName: selectedTab == 2 ? "bubble.left.fill" : "bubble.left") // Icône pour Chat
-                        Text("Chat")
+                        CustomTabItem(icon: "bubble.left", text: "Chat", isSelected: selectedTab == 2)
                     }
-                    .tag(2) // Index de cet onglet
+                    .tag(2)
 
-                // Onglet 4 : Notifications
+                // Notifications Tab
                 NotificationScreen()
                     .tabItem {
-                        Image(systemName: selectedTab == 3 ? "bell.fill" : "bell") // Icône pour Notifications
-                        Text("Notifications")
+                        CustomTabItem(icon: "bell", text: "Notifications", isSelected: selectedTab == 3)
                     }
-                    .tag(3) // Index de cet onglet
+                    .tag(3)
 
-                // Onglet 5 : Paramètres
+                // Profile Tab
                 ProfileScreen(onLogout: {
-                    isLoggedIn = false // Déconnecte l'utilisateur et revient à l'écran Login
-                    showSplash = true // Affiche la SplashScreen après déconnexion
+                    isLoggedIn = false
+                    showSplash = true
                 })
                     .tabItem {
-                        Image(systemName: selectedTab == 4 ? "gearshape.fill" : "gearshape") // Icône pour Paramètres
-                        Text("Settings")
+                        CustomTabItem(icon: "gearshape", text: "Settings", isSelected: selectedTab == 4)
                     }
-                    .tag(4) // Index de cet onglet
+                    .tag(4)
             }
-            .accentColor(.blue) // Couleur principale de la barre (modifiable)
+            .accentColor(Color(red: 0.58, green: 0.0, blue: 0.83)) // Accent color for selected TabItem
         } else {
-            if isCreatingAccount { // Affiche la page de création de compte si nécessaire
+            if isCreatingAccount {
                 SignUpScreen(onSignUpComplete: {
-                    isCreatingAccount = false // Retourne à l'écran de connexion après la création de compte
+                    isCreatingAccount = false
+                }, onRetour: {
+                    isCreatingAccount = false
                 })
             } else {
-                // Affiche lécran de connexion si l'utilisateur n'est pas connecté
                 LoginScreen(
                     onLogin: {
-                        isLoggedIn = true // Réactive la TabView après connexion
+                        isLoggedIn = true
                     },
                     onSignUp: {
-                        isCreatingAccount = true // Passe à l'écran de création de compte
+                        isCreatingAccount = true
                     }
                 )
             }
@@ -69,9 +66,27 @@ struct MainApp: View {
     }
 }
 
-// Aperçu pour Xcode
+// Custom Tab Item
+struct CustomTabItem: View {
+    let icon: String
+    let text: String
+    let isSelected: Bool
+
+    var body: some View {
+        VStack {
+            Image(systemName: isSelected ? "\(icon).fill" : icon)
+                .font(.title2)
+                .foregroundColor(isSelected ? Color(red: 0.58, green: 0.0, blue: 0.83) : .gray)
+
+            Text(text)
+                .font(.caption)
+                .foregroundColor(isSelected ? Color(red: 0.58, green: 0.0, blue: 0.83) : .gray)
+        }
+    }
+}
+
 struct MainApp_Previews: PreviewProvider {
     static var previews: some View {
-        MainApp() // Aperçu de l'application avec barre de navigation
+        MainApp()
     }
 }
