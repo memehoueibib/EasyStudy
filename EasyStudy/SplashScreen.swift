@@ -5,23 +5,54 @@ struct SplashScreen: View {
 
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 30) {
-                Image("splash_image") // Remplacez par votre asset d'image
+            VStack {
+                Spacer() // Espace pour centrer le contenu verticalement
+                
+                VStack(spacing: 15) {
+                    // Titre principal
+                    Text("Easy Study")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.black)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                    
+                    // Sous-titre
+                    Text("Connect to learn, share, and succeed")
+                        .font(.body)
+                        .foregroundColor(Color.gray)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                }
+                .padding(.top, 20)
+                
+                // Image
+                Image("Dayflow Best Friends")
                     .resizable()
                     .scaledToFit()
-                    .frame(height: geometry.size.height * 0.3) // Hauteur adaptée à l'écran
+                    .frame(maxWidth: geometry.size.width * 0.8) // Limiter la taille de l'image
+                    .padding(.vertical, 10)
+                    .padding(.top, 50)
+                
+                // Barre horizontale et trois points
+                HStack {
+                    Spacer()
+                    Image("barre-verticale")
+                        .resizable()
+                        .rotationEffect(.degrees(90))
+                        .frame(width: 30, height: 30)
+                    
+                    Image("trois-points")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                    Spacer()
+                }
+                .padding(.vertical, 10)
+                
+                Spacer() // Ajoute un espace pour pousser le bouton vers le bas
 
-                Text("Easy Study")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-
-                Text("Connect to Learn, Share, and Succeed!")
-                    .font(.title3)
-                    .foregroundColor(.gray)
-                    .multilineTextAlignment(.center)
-
-                Spacer()
-
+                // Bouton "Get Started"
                 Button(action: {
                     onNext() // Navigue vers LoginScreen
                 }) {
