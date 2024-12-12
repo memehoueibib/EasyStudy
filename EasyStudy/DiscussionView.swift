@@ -77,7 +77,7 @@ struct DiscussionView: View {
                 Image(systemName: "person.circle.fill")
                     .foregroundColor(.blue)
                     .font(.title2)
-                Text("Author: \(message.author_id.uuidString)")
+                Text("Author: \(message.users.username)")
                     .font(.subheadline)
                     .foregroundColor(.blue)
             }

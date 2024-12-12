@@ -55,7 +55,7 @@ struct MainApp: View {
                     isCreatingAccount = false // Retourne à l'écran de connexion après la création de compte
                 })
             } else {
-                // Affiche l'écran de connexion si l'utilisateur n'est pas connecté
+                // Affiche lécran de connexion si l'utilisateur n'est pas connecté
                 LoginScreen(
                     onLogin: {
                         isLoggedIn = true // Réactive la TabView après connexion

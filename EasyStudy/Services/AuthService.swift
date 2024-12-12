@@ -13,10 +13,14 @@ class AuthService {
 
     // Inscription
     func signUp(email: String, password: String) async throws -> String {
+
+        // Pass the userData dictionary to the signUp method
         let result = try await client.auth.signUp(email: email, password: password)
+
         return "Utilisateur créé : \(result.user.email ?? "Inconnu")"
     }
 
+    
     // Connexion
     func signIn(email: String, password: String) async throws -> String {
         let result = try await client.auth.signIn(email: email, password: password)
@@ -28,15 +32,32 @@ class AuthService {
         try await client.auth.signOut()
         return "Déconnexion réussie"
     }
+    
+    func getUsername() async throws -> String {
+        let session = try await client.auth.session
+        let user = session.user
+  
+        if let usernameJSON = user.userMetadata["username"],
+           case let .string(username) = usernameJSON {
+            return username
+        } else {
+            return "Inconnu"
+        }
+    }
 
     // Récupération des catégories
     func fetchCategories() async throws -> [Category] {
         let response: PostgrestResponse<[Category]> = try await client
             .from("categories")
-            .select()
+            .select("""
+            *,
+            users(id, username, email)
+            """)
             .execute()
+        
         return response.value
     }
+
 
     // Ajout d'une catégorie
     func addCategory(name: String) async throws -> Category {
@@ -94,7 +115,10 @@ class AuthService {
     func fetchMessages(for discussionId: UUID) async throws -> [Message] {
         let response: PostgrestResponse<[Message]> = try await client
             .from("messages")
-            .select()
+            .select("""
+            *,
+            users(id, username, email)
+            """)
             .eq("discussion_id", value: discussionId)
             .execute()
 
